@@ -1,15 +1,22 @@
-import { useState } from "react";
-import { classifyPostClient, postToFeed } from "../services/postService";
+import { useState, useEffect } from "react";
+import { classifyPostClient, postToFeed, getUserSession } from "../services/postService";
 import PostPreview from "./PostPreview";
 import "./PostGenerator.css";
 
-export default function PostGenerator() {
+export default function PostGenerator({ onBackToFeed }) {
   const [input, setInput] = useState("");
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [posting, setPosting] = useState(false);
   const [message, setMessage] = useState("");
   const [showPreview, setShowPreview] = useState(false);
+  const [userSession, setUserSession] = useState(null);
+
+  useEffect(() => {
+    // Get user session on component mount
+    const session = getUserSession();
+    setUserSession(session);
+  }, []);
 
   async function handleGenerate() {
     if (!input.trim()) return;
@@ -36,6 +43,10 @@ export default function PostGenerator() {
       setPreview(null);
       setShowPreview(false);
       setInput("");
+      // Return to feed after successful post
+      if (onBackToFeed) {
+        onBackToFeed();
+      }
     } catch (err) {
       setMessage(`Error posting: ${err.message}`);
     } finally {
@@ -57,6 +68,12 @@ export default function PostGenerator() {
     setShowPreview(false);
     setPreview(null);
     setMessage("");
+  }
+
+  function handleBackToFeed() {
+    if (onBackToFeed) {
+      onBackToFeed();
+    }
   }
 
   const examplePrompts = [
@@ -95,10 +112,24 @@ export default function PostGenerator() {
   return (
     <div className="post-generator-container">
       <div className="generator-header">
-        <h1 className="generator-title">IIIT-Una Feed Post Generator</h1>
+        <div className="generator-header-top">
+          <button 
+            onClick={handleBackToFeed}
+            className="back-to-feed-button"
+          >
+            ← Back to Feed
+          </button>
+          <h1 className="generator-title">IIIT-Una Feed Post Generator</h1>
+        </div>
         <p className="generator-subtitle">
           Type naturally and let AI help you create the perfect campus post
         </p>
+        {userSession && (
+          <div className="session-indicator">
+            <span className="session-text">Welcome back, {userSession.username}!</span>
+            <span className="session-info">No login required • Session saved automatically</span>
+          </div>
+        )}
       </div>
 
       <div className="input-section">

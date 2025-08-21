@@ -33,3 +33,365 @@ button {
 input, textarea {
   font-family: inherit;
 }
+
+/* Feed Styles */
+.feed-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  color: white;
+}
+
+.feed-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.feed-title {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #e94560, #f39c12);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.feed-subtitle {
+  font-size: 1.2rem;
+  color: #b8c5d6;
+  margin-bottom: 1.5rem;
+  opacity: 0.9;
+}
+
+.user-welcome {
+  background: rgba(233, 69, 96, 0.1);
+  border: 1px solid rgba(233, 69, 96, 0.3);
+  border-radius: 16px;
+  padding: 1rem 1.5rem;
+  margin: 0 auto;
+  max-width: 400px;
+  backdrop-filter: blur(10px);
+  color: #e94560;
+  font-weight: 500;
+}
+
+.create-post-section {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.create-post-button {
+  background: linear-gradient(135deg, #e94560, #f39c12);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 16px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 15px rgba(233, 69, 96, 0.3);
+}
+
+.create-post-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(233, 69, 96, 0.4);
+}
+
+.posts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.post-card {
+  background: rgba(26, 26, 46, 0.8);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 1.5rem;
+  border: 1px solid rgba(233, 69, 96, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.post-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  border-color: rgba(233, 69, 96, 0.4);
+}
+
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.post-author {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.author-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid rgba(233, 69, 96, 0.3);
+}
+
+.author-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.author-name {
+  font-weight: 600;
+  color: white;
+  font-size: 0.95rem;
+}
+
+.post-time {
+  color: #b8c5d6;
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.post-type-badge {
+  padding: 0.4rem 0.8rem;
+  border-radius: 16px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  border: 2px solid;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.post-content {
+  margin-bottom: 1.5rem;
+}
+
+.post-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.75rem;
+  line-height: 1.3;
+}
+
+.post-description {
+  color: #b8c5d6;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+}
+
+.post-detail {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #b8c5d6;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.detail-icon {
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+.post-footer {
+  border-top: 1px solid rgba(233, 69, 96, 0.1);
+  padding-top: 1rem;
+}
+
+.post-stats {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #b8c5d6;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.stat-item:hover {
+  color: #e94560;
+}
+
+.stat-icon {
+  font-size: 1rem;
+}
+
+/* Loading and Empty States */
+.feed-loading {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #b8c5d6;
+}
+
+.feed-loading .loading-spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 3px solid transparent;
+  border-top: 3px solid #e94560;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.empty-feed {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #b8c5d6;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.6;
+}
+
+.empty-feed h3 {
+  color: white;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.empty-feed p {
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+.create-first-post-btn {
+  background: linear-gradient(135deg, #e94560, #f39c12);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 16px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.create-first-post-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(233, 69, 96, 0.4);
+}
+
+/* Generator Header Updates */
+.generator-header-top {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.back-to-feed-button {
+  background: rgba(184, 197, 214, 0.1);
+  color: #b8c5d6;
+  border: 1px solid rgba(184, 197, 214, 0.3);
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  backdrop-filter: blur(10px);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.back-to-feed-button:hover {
+  background: rgba(184, 197, 214, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(184, 197, 214, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .feed-container {
+    padding: 1rem;
+  }
+  
+  .feed-title {
+    font-size: 2.5rem;
+  }
+  
+  .posts-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .post-card {
+    padding: 1.25rem;
+  }
+  
+  .generator-header-top {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .back-to-feed-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .feed-container {
+    padding: 0.5rem;
+  }
+  
+  .feed-title {
+    font-size: 2rem;
+  }
+  
+  .feed-subtitle {
+    font-size: 1rem;
+  }
+  
+  .create-post-button {
+    width: 100%;
+    padding: 1rem;
+  }
+  
+  .post-card {
+    padding: 1rem;
+  }
+  
+  .post-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .post-type-badge {
+    align-self: flex-start;
+  }
+}
