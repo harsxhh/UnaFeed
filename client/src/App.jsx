@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import PostGenerator from "./components/PostGenerator";
 import { getUserSession } from "./services/postService";
-import { getFeed, initSession, togglePostReaction, getComments, createComment, toggleCommentReaction } from "./services/backend";
+import { getFeed, initSession, togglePostReaction, getComments, createComment, toggleCommentReaction, setEventRsvp } from "./services/backend";
 import "./App.css";
 
 function App() {
@@ -15,6 +15,7 @@ function App() {
   const [commentMsg, setCommentMsg] = useState("");
   const [pendingOverride, setPendingOverride] = useState(false);
   const [busy, setBusy] = useState({}); // map of id->boolean for per-post actions
+  const [rsvpBusy, setRsvpBusy] = useState({}); // separate busy map for RSVP
 
   useEffect(() => {
     // ensure server sets deviceId cookie; maintain frontend-only display session
@@ -79,6 +80,30 @@ function App() {
     } finally {
       setBusy((b) => ({ ...b, [postId]: false }));
     }
+  }
+
+  async function rsvpEvent(postId, status) {
+    setRsvpBusy((b) => ({ ...b, [postId]: true }));
+    try {
+      const res = await setEventRsvp(postId, status);
+      setPosts((ps) => ps.map((p) => (
+        String(p._id || p.id) === String(postId)
+          ? { ...p, rsvps: res.rsvps || [], counts: res.counts || undefined }
+          : p
+      )));
+    } catch (err) {
+      console.error('RSVP failed', err);
+    } finally {
+      setRsvpBusy((b) => ({ ...b, [postId]: false }));
+    }
+  }
+
+  function getRsvpCounts(post) {
+    const counts = post.counts || {};
+    const rsvps = Array.isArray(post.rsvps) ? post.rsvps : [];
+    const going = typeof counts.going === 'number' ? counts.going : rsvps.filter((r) => r.status === 'going').length;
+    const notGoing = typeof counts.notGoing === 'number' ? counts.notGoing : rsvps.filter((r) => r.status === 'not_going').length;
+    return { going, notGoing };
   }
 
   async function reactToComment(commentId, type) {
@@ -257,6 +282,30 @@ function App() {
                       <span className="detail-icon">📅</span>
                       <span>{formatDate(post.date)}</span>
                     </div>
+                  )}
+                  {intent === 'Event' && (
+                    (() => {
+                      const { going, notGoing } = getRsvpCounts(post);
+                      return (
+                        <div className="post-detail">
+                          <span className="detail-icon">🗳️</span>
+                          <button
+                            disabled={!!rsvpBusy[post._id || post.id]}
+                            className="stat-item"
+                            onClick={() => rsvpEvent(post._id || post.id, 'going')}
+                          >
+                            I am coming ({going})
+                          </button>
+                          <button
+                            disabled={!!rsvpBusy[post._id || post.id]}
+                            className="stat-item"
+                            onClick={() => rsvpEvent(post._id || post.id, 'not_going')}
+                          >
+                            Not coming ({notGoing})
+                          </button>
+                        </div>
+                      );
+                    })()
                   )}
                   
                   {intent === 'LostFound' && (post.item || post.itemName) && (
