@@ -6,6 +6,7 @@ import {
   updatePost,
   deletePost,
   togglePostReaction,
+  setEventRsvp,
 } from '../controllers/posts.controller.js';
 
 const router = Router();
@@ -27,6 +28,9 @@ router.delete('/:id', deletePost);
 
 // POST /api/posts/:id/reactions - toggle reaction
 router.post('/:id/reactions', togglePostReaction);
+
+// POST /api/posts/:id/rsvp - set event RSVP
+router.post('/:id/rsvp', setEventRsvp);
 
 export default router;
 
