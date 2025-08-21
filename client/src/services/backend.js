@@ -25,4 +25,29 @@ export async function createPost(payload) {
   return res.data;
 }
 
+export async function getPostById(id) {
+  const res = await api.get(`/posts/${id}`);
+  return res.data;
+}
+
+export async function togglePostReaction(id, type) {
+  const res = await api.post(`/posts/${id}/reactions`, { type });
+  return res.data;
+}
+
+export async function getComments(postId) {
+  const res = await api.get(`/posts/${postId}/comments`);
+  return res.data;
+}
+
+export async function createComment(postId, payload) {
+  const res = await api.post(`/posts/${postId}/comments`, payload);
+  return res.data;
+}
+
+export async function toggleCommentReaction(postId, commentId, type) {
+  const res = await api.post(`/posts/${postId}/comments/${commentId}/reactions`, { type });
+  return res.data;
+}
+
 
