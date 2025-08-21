@@ -204,8 +204,7 @@ function buildBackendPayload(postData, confirmOverride) {
   if (confirmOverride) base.confirmOverride = true;
 
   if (kind === 'Event') {
-    const iso = normalizeEventDate(postData.date || postData.description || '');
-    return { ...base, date: iso || new Date().toISOString(), location: postData.location || 'TBD' };
+    return { ...base, date: postData.date || new Date().toISOString(), location: postData.location || 'TBD' };
   }
   if (kind === 'LostFound') {
     const inferredStatus = inferLostFoundStatus(postData.description || postData.title || '');
@@ -230,39 +229,7 @@ function mapIntentToKind(intent) {
   return 'Announcement';
 }
 
-function normalizeEventDate(value) {
-  if (!value) return null;
-  const text = String(value).toLowerCase();
-  const now = new Date();
-  let d = new Date(value);
-  if (!isNaN(d.getTime())) return d.toISOString();
-  if (text.includes('tomorrow')) {
-    const t = new Date();
-    t.setDate(t.getDate() + 1);
-    t.setHours(14, 0, 0, 0);
-    const m = text.match(/(\d{1,2})\s*(am|pm)/);
-    if (m) {
-      let h = parseInt(m[1], 10);
-      const ap = m[2];
-      if (ap === 'pm' && h < 12) h += 12;
-      if (ap === 'am' && h === 12) h = 0;
-      t.setHours(h, 0, 0, 0);
-    }
-    return t.toISOString();
-  }
-  if (text.includes('today')) {
-    const t = new Date();
-    t.setHours(14, 0, 0, 0);
-    return t.toISOString();
-  }
-  if (text.includes('next week')) {
-    const t = new Date();
-    t.setDate(t.getDate() + 7);
-    t.setHours(14, 0, 0, 0);
-    return t.toISOString();
-  }
-  return null;
-}
+
 
 function inferLostFoundStatus(text) {
   const s = text.toLowerCase();

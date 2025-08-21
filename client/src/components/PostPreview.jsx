@@ -60,16 +60,32 @@ export default function PostPreview({
   function formatDate(dateString) {
     if (!dateString) return "Not specified";
     try {
-      return new Date(dateString).toLocaleDateString("en-US", {
+      return new Date(dateString).toLocaleDateString("en-IN", {
         weekday: "long",
         year: "numeric",
         month: "long",
         day: "numeric",
         hour: "2-digit",
-        minute: "2-digit"
+        minute: "2-digit",
+        timeZone: "Asia/Kolkata"
       });
     } catch {
       return dateString;
+    }
+  }
+
+  function formatDateForInput(dateString) {
+    if (!dateString) return "";
+    try {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      return `${year}-${month}-${day}T${hours}:${minutes}`;
+    } catch {
+      return "";
     }
   }
 
@@ -83,20 +99,35 @@ export default function PostPreview({
           <h4>Event Details</h4>
         </div>
         <div className="detail-grid">
-          {previewData.location && (
-            <div className="detail-item">
-              <MapPin className="detail-icon" />
-              <span className="detail-label">Location:</span>
-              <span className="detail-value">{previewData.location}</span>
-            </div>
-          )}
-          {previewData.date && (
-            <div className="detail-item">
-              <Calendar className="detail-icon" />
-              <span className="detail-label">Date:</span>
+          <div className="detail-item">
+            <MapPin className="detail-icon" />
+            <span className="detail-label">Location:</span>
+            {editMode ? (
+              <input
+                type="text"
+                className="edit-input"
+                value={editedData.location || ""}
+                onChange={(e) => setEditedData({...editedData, location: e.target.value})}
+                placeholder="Enter event location"
+              />
+            ) : (
+              <span className="detail-value">{previewData.location || "Not specified"}</span>
+            )}
+          </div>
+          <div className="detail-item">
+            <Calendar className="detail-icon" />
+            <span className="detail-label">Date & Time:</span>
+            {editMode ? (
+              <input
+                type="datetime-local"
+                className="edit-input"
+                value={formatDateForInput(editedData.date)}
+                onChange={(e) => setEditedData({...editedData, date: e.target.value ? new Date(e.target.value).toISOString() : null})}
+              />
+            ) : (
               <span className="detail-value">{formatDate(previewData.date)}</span>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     );
@@ -112,20 +143,51 @@ export default function PostPreview({
           <h4>Item Details</h4>
         </div>
         <div className="detail-grid">
-          {previewData.item && (
-            <div className="detail-item">
-              <Package className="detail-icon" />
-              <span className="detail-label">Item:</span>
-              <span className="detail-value">{previewData.item}</span>
-            </div>
-          )}
-          {previewData.location && (
-            <div className="detail-item">
-              <MapPin className="detail-icon" />
-              <span className="detail-label">Location:</span>
-              <span className="detail-value">{previewData.location}</span>
-            </div>
-          )}
+          <div className="detail-item">
+            <Package className="detail-icon" />
+            <span className="detail-label">Item:</span>
+            {editMode ? (
+              <input
+                type="text"
+                className="edit-input"
+                value={editedData.item || editedData.itemName || ""}
+                onChange={(e) => setEditedData({...editedData, item: e.target.value, itemName: e.target.value})}
+                placeholder="Enter item name"
+              />
+            ) : (
+              <span className="detail-value">{previewData.item || previewData.itemName || "Not specified"}</span>
+            )}
+          </div>
+          <div className="detail-item">
+            <MapPin className="detail-icon" />
+            <span className="detail-label">Location:</span>
+            {editMode ? (
+              <input
+                type="text"
+                className="edit-input"
+                value={editedData.location || ""}
+                onChange={(e) => setEditedData({...editedData, location: e.target.value})}
+                placeholder="Enter location where lost/found"
+              />
+            ) : (
+              <span className="detail-value">{previewData.location || "Not specified"}</span>
+            )}
+          </div>
+          <div className="detail-item">
+            <span className="detail-label">Status:</span>
+            {editMode ? (
+              <select
+                className="edit-input"
+                value={editedData.status || "lost"}
+                onChange={(e) => setEditedData({...editedData, status: e.target.value})}
+              >
+                <option value="lost">Lost</option>
+                <option value="found">Found</option>
+              </select>
+            ) : (
+              <span className="detail-value">{previewData.status || "Lost"}</span>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -141,13 +203,37 @@ export default function PostPreview({
           <h4>Announcement Details</h4>
         </div>
         <div className="detail-grid">
-          {previewData.department && (
-            <div className="detail-item">
-              <Building2 className="detail-icon" />
-              <span className="detail-label">Department:</span>
-              <span className="detail-value">{previewData.department}</span>
-            </div>
-          )}
+          <div className="detail-item">
+            <Building2 className="detail-icon" />
+            <span className="detail-label">Department:</span>
+            {editMode ? (
+              <input
+                type="text"
+                className="edit-input"
+                value={editedData.department || ""}
+                onChange={(e) => setEditedData({...editedData, department: e.target.value})}
+                placeholder="Enter department name"
+              />
+            ) : (
+              <span className="detail-value">{previewData.department || "General"}</span>
+            )}
+          </div>
+          <div className="detail-item">
+            <span className="detail-label">Importance:</span>
+            {editMode ? (
+              <select
+                className="edit-input"
+                value={editedData.importance || "medium"}
+                onChange={(e) => setEditedData({...editedData, importance: e.target.value})}
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            ) : (
+              <span className="detail-value">{previewData.importance || "Medium"}</span>
+            )}
+          </div>
         </div>
       </div>
     );
