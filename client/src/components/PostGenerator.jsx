@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { getUserSession } from "../services/postService";
 import { classify as classifyApi, createPost as createPostApi } from "../services/backend";
 import PostPreview from "./PostPreview";
+import ImageUpload from "./ImageUpload";
 import "./PostGenerator.css";
+import "./ImageUpload.css";
 
 export default function PostGenerator({ onBackToFeed }) {
   const [input, setInput] = useState("");
@@ -12,6 +14,7 @@ export default function PostGenerator({ onBackToFeed }) {
   const [message, setMessage] = useState("");
   const [showPreview, setShowPreview] = useState(false);
   const [userSession, setUserSession] = useState(null);
+  const [images, setImages] = useState([]);
 
   useEffect(() => {
     // Get user session on component mount
@@ -27,7 +30,8 @@ export default function PostGenerator({ onBackToFeed }) {
     
     try {
       const result = await classifyApi(input);
-      setPreview(result);
+      // Add images to the preview data
+      setPreview({ ...result, images });
       setShowPreview(true);
     } catch (err) {
       setMessage(`Error: ${err?.response?.data?.error || err.message}`);
@@ -162,6 +166,16 @@ export default function PostGenerator({ onBackToFeed }) {
           </button>
         </div>
 
+        {/* Image Upload */}
+        <div className="image-upload-section">
+          <h3>Add Images (Optional)</h3>
+          <ImageUpload
+            onImageUploaded={setImages}
+            onImageRemoved={setImages}
+            existingImages={images}
+          />
+        </div>
+
         {/* Example prompts */}
         <div className="example-prompts">
           <h3>Try these examples:</h3>
@@ -200,6 +214,7 @@ function buildBackendPayload(postData, confirmOverride) {
     title: postData.title,
     description: postData.description,
     tags: Array.isArray(postData.tags) ? postData.tags : [],
+    images: postData.images || [],
   };
   if (confirmOverride) base.confirmOverride = true;
 

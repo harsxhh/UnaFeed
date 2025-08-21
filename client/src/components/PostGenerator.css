@@ -226,6 +226,27 @@
   font-size: 1.2rem;
 }
 
+/* Image Upload Section */
+.image-upload-section {
+  margin: 2rem 0;
+  width: 100%;
+}
+
+.image-upload-section h3 {
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.image-upload-section h3::before {
+  content: "🖼️";
+  font-size: 1.1rem;
+}
+
 /* Example Prompts */
 .example-prompts {
   text-align: center;
@@ -695,6 +716,33 @@
 .button-icon {
   width: 1rem;
   height: 1rem;
+}
+
+/* Preview Images */
+.preview-images-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.preview-image-item {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(184, 197, 214, 0.1);
+  border: 1px solid rgba(184, 197, 214, 0.2);
+}
+
+.preview-image-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.preview-image-item:hover img {
+  transform: scale(1.05);
 }
 
 /* Responsive Design */

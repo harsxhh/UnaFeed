@@ -13,6 +13,7 @@ import aiRoutes from './routes/ai.routes.js';
 import postRoutes from './routes/posts.routes.js';
 import commentRoutes from './routes/comments.routes.js';
 import uploadRoutes from './routes/uploads.routes.js';
+import cloudinaryRoutes from './routes/cloudinary.routes.js';
 import morgan from 'morgan';
 
 dotenv.config();
@@ -48,6 +49,7 @@ app.get('/health', (req, res) => {
 // Routes
 app.use('/api', aiRoutes);
 app.use('/api', uploadRoutes);
+app.use('/api/cloudinary', cloudinaryRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/posts', commentRoutes); // comments under /api/posts/:id/comments
 

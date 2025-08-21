@@ -226,6 +226,24 @@ function App() {
                   <h3 className="post-title">{post.title}</h3>
                   <p className="post-description">{post.description}</p>
                   
+                  {/* Images */}
+                  {post.images && post.images.length > 0 && (
+                    <div className="post-images">
+                      <div className="post-images-grid">
+                        {post.images.slice(0, 4).map((image, index) => (
+                          <div key={index} className="post-image-item">
+                            <img src={image.url} alt={`Post image ${index + 1}`} />
+                          </div>
+                        ))}
+                        {post.images.length > 4 && (
+                          <div className="post-image-more">
+                            +{post.images.length - 4} more
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  
                   {/* Post-specific details */}
                   {intent === 'Event' && post.location && (
                     <div className="post-detail">

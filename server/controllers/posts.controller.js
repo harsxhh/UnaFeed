@@ -81,6 +81,7 @@ export async function createPost(req, res, next) {
       title,
       description,
       tags: Array.isArray(req.body.tags) ? req.body.tags : [],
+      images: Array.isArray(req.body.images) ? req.body.images : [],
     };
 
     let payload = base;
@@ -117,7 +118,7 @@ export async function updatePost(req, res, next) {
     if (post.authorId !== authorId) return res.status(403).json({ error: 'Forbidden' });
 
     const updates = {};
-    ['title', 'description', 'tags'].forEach((k) => {
+    ['title', 'description', 'tags', 'images'].forEach((k) => {
       if (k in req.body) updates[k] = req.body[k];
     });
 

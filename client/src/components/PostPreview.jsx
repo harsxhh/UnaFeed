@@ -306,6 +306,20 @@ export default function PostPreview({
             )}
           </div>
 
+          {/* Images */}
+          {previewData.images && previewData.images.length > 0 && (
+            <div className="preview-field">
+              <label className="field-label">Images</label>
+              <div className="preview-images-grid">
+                {previewData.images.map((image, index) => (
+                  <div key={index} className="preview-image-item">
+                    <img src={image.url} alt={`Preview ${index + 1}`} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Type-specific sections */}
           {renderEventSection()}
           {renderLostFoundSection()}

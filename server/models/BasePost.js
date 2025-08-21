@@ -13,6 +13,14 @@ const BasePostSchema = new Schema(
     title: { type: String, required: true },
     description: { type: String, required: true },
     tags: [{ type: String }],
+    images: [
+      {
+        url: { type: String, required: true },
+        publicId: { type: String },
+        width: { type: Number },
+        height: { type: Number },
+      },
+    ],
     reactions: [
       {
         userId: String,
