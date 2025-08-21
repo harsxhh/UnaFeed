@@ -7,6 +7,8 @@ export const connectToDatabase = async () => {
     if (!dbUri) {
       throw new Error('MONGODB_URI environment variable is not set');
     }
+
+    // Safe connection options compatible with MongoDB Node.js driver v4+
     const options = {
       maxPoolSize: 10,
       serverSelectionTimeoutMS: 5000,
