@@ -172,4 +172,38 @@ export async function togglePostReaction(req, res, next) {
   }
 }
 
+// RSVP: set or update the user's RSVP for an Event post
+export async function setEventRsvp(req, res, next) {
+  try {
+    const { status } = req.body || {};
+    if (!['going', 'not_going'].includes(status)) {
+      return res.status(400).json({ error: 'status must be going or not_going' });
+    }
+
+    const userId = getAuthorId(req);
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(404).json({ error: 'Post not found' });
+    if (post.kind !== 'Event') return res.status(400).json({ error: 'RSVP only valid for Event posts' });
+
+    const eventDoc = post;
+    const existingIndex = (eventDoc.rsvps || []).findIndex((r) => r.userId === userId);
+    if (existingIndex !== -1) {
+      eventDoc.rsvps[existingIndex].status = status;
+      eventDoc.rsvps[existingIndex].updatedAt = new Date();
+    } else {
+      if (!eventDoc.rsvps) eventDoc.rsvps = [];
+      eventDoc.rsvps.push({ userId, status, updatedAt: new Date() });
+    }
+
+    await eventDoc.save();
+
+    const going = eventDoc.rsvps.filter((r) => r.status === 'going').length;
+    const notGoing = eventDoc.rsvps.filter((r) => r.status === 'not_going').length;
+
+    res.json({ rsvps: eventDoc.rsvps, counts: { going, notGoing } });
+  } catch (err) {
+    next(err);
+  }
+}
+
 
