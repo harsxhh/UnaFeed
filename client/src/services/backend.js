@@ -35,6 +35,11 @@ export async function togglePostReaction(id, type) {
   return res.data;
 }
 
+export async function setEventRsvp(id, status) {
+  const res = await api.post(`/posts/${id}/rsvp`, { status });
+  return res.data;
+}
+
 export async function getComments(postId) {
   const res = await api.get(`/posts/${postId}/comments`);
   return res.data;
