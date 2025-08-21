@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { classifyPostClient, postToFeed, getUserSession } from "../services/postService";
+import { getUserSession } from "../services/postService";
+import { classify as classifyApi, createPost as createPostApi } from "../services/backend";
 import PostPreview from "./PostPreview";
 import "./PostGenerator.css";
 
@@ -25,11 +26,11 @@ export default function PostGenerator({ onBackToFeed }) {
     setMessage("");
     
     try {
-      const result = await classifyPostClient(input);
+      const result = await classifyApi(input);
       setPreview(result);
       setShowPreview(true);
     } catch (err) {
-      setMessage(`Error: ${err.message}`);
+      setMessage(`Error: ${err?.response?.data?.error || err.message}`);
     } finally {
       setLoading(false);
     }
@@ -38,17 +39,19 @@ export default function PostGenerator({ onBackToFeed }) {
   async function handlePost(postData) {
     setPosting(true);
     try {
-      const result = await postToFeed(postData);
-      setMessage(result.message);
-      setPreview(null);
-      setShowPreview(false);
-      setInput("");
-      // Return to feed after successful post
-      if (onBackToFeed) {
-        onBackToFeed();
+      const payload = buildBackendPayload(postData, /confirm/i.test(message));
+      const created = await createPostApi(payload);
+      if (created && created.warning) {
+        setMessage(`${created.message} Click Post again to confirm.`);
+      } else {
+        setMessage(`Post "${created.title || postData.title}" created.`);
+        setPreview(null);
+        setShowPreview(false);
+        setInput("");
+        if (onBackToFeed) onBackToFeed();
       }
     } catch (err) {
-      setMessage(`Error posting: ${err.message}`);
+      setMessage(`Error posting: ${err?.response?.data?.error || err.message}`);
     } finally {
       setPosting(false);
     }
@@ -188,4 +191,81 @@ export default function PostGenerator({ onBackToFeed }) {
       )}
     </div>
   );
+}
+
+function buildBackendPayload(postData, confirmOverride) {
+  const kind = mapIntentToKind(postData.intent);
+  const base = {
+    kind,
+    title: postData.title,
+    description: postData.description,
+    tags: Array.isArray(postData.tags) ? postData.tags : [],
+  };
+  if (confirmOverride) base.confirmOverride = true;
+
+  if (kind === 'Event') {
+    const iso = normalizeEventDate(postData.date || postData.description || '');
+    return { ...base, date: iso || new Date().toISOString(), location: postData.location || 'TBD' };
+  }
+  if (kind === 'LostFound') {
+    const inferredStatus = inferLostFoundStatus(postData.description || postData.title || '');
+    return {
+      ...base,
+      itemName: postData.item || postData.itemName || 'Item',
+      imageUrl: postData.imageUrl || null,
+      contactInfo: postData.contactInfo || 'Please contact via comments',
+      status: (postData.status || inferredStatus),
+    };
+  }
+  if (kind === 'Announcement') {
+    return { ...base, pdfUrl: postData.pdfUrl || null, importance: postData.importance || 'medium' };
+  }
+  return base;
+}
+
+function mapIntentToKind(intent) {
+  if (intent === 'Event') return 'Event';
+  if (intent === 'LostFound') return 'LostFound';
+  if (intent === 'Announcement') return 'Announcement';
+  return 'Announcement';
+}
+
+function normalizeEventDate(value) {
+  if (!value) return null;
+  const text = String(value).toLowerCase();
+  const now = new Date();
+  let d = new Date(value);
+  if (!isNaN(d.getTime())) return d.toISOString();
+  if (text.includes('tomorrow')) {
+    const t = new Date();
+    t.setDate(t.getDate() + 1);
+    t.setHours(14, 0, 0, 0);
+    const m = text.match(/(\d{1,2})\s*(am|pm)/);
+    if (m) {
+      let h = parseInt(m[1], 10);
+      const ap = m[2];
+      if (ap === 'pm' && h < 12) h += 12;
+      if (ap === 'am' && h === 12) h = 0;
+      t.setHours(h, 0, 0, 0);
+    }
+    return t.toISOString();
+  }
+  if (text.includes('today')) {
+    const t = new Date();
+    t.setHours(14, 0, 0, 0);
+    return t.toISOString();
+  }
+  if (text.includes('next week')) {
+    const t = new Date();
+    t.setDate(t.getDate() + 7);
+    t.setHours(14, 0, 0, 0);
+    return t.toISOString();
+  }
+  return null;
+}
+
+function inferLostFoundStatus(text) {
+  const s = text.toLowerCase();
+  if (s.includes('found')) return 'found';
+  return 'lost';
 }

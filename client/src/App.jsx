@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import PostGenerator from "./components/PostGenerator";
-import { getFeedPosts, getUserSession } from "./services/postService";
+import { getUserSession } from "./services/postService";
+import { getFeed, initSession } from "./services/backend";
 import "./App.css";
 
 function App() {
@@ -10,17 +11,19 @@ function App() {
   const [userSession, setUserSession] = useState(null);
 
   useEffect(() => {
-    // Get user session and load posts on component mount
-    const session = getUserSession();
-    setUserSession(session);
-    loadPosts();
+    // ensure server sets deviceId cookie; maintain frontend-only display session
+    initSession().finally(() => {
+      const session = getUserSession();
+      setUserSession(session);
+      loadPosts();
+    });
   }, []);
 
   async function loadPosts() {
     setLoading(true);
     try {
-      const feedPosts = await getFeedPosts();
-      setPosts(feedPosts);
+      const res = await getFeed({ page: 1, limit: 20 });
+      setPosts(res.items || []);
     } catch (error) {
       console.error('Error loading posts:', error);
     } finally {
@@ -131,9 +134,10 @@ function App() {
 
         <div className="posts-grid">
           {posts.map((post) => {
-            const typeStyles = getPostTypeStyles(post.intent);
+            const intent = post.intent || post.kind || 'Announcement';
+            const typeStyles = getPostTypeStyles(intent);
             return (
-              <div key={post.id} className="post-card">
+              <div key={post._id || post.id} className="post-card">
                 <div className="post-header">
                   <div className="post-author">
                     <img 
@@ -154,7 +158,7 @@ function App() {
                       backgroundColor: typeStyles.bgColor
                     }}
                   >
-                    {post.intent}
+                    {intent}
                   </div>
                 </div>
 
@@ -163,28 +167,28 @@ function App() {
                   <p className="post-description">{post.description}</p>
                   
                   {/* Post-specific details */}
-                  {post.intent === 'Event' && post.location && (
+                  {intent === 'Event' && post.location && (
                     <div className="post-detail">
                       <span className="detail-icon">📍</span>
                       <span>{post.location}</span>
                     </div>
                   )}
                   
-                  {post.intent === 'Event' && post.date && (
+                  {intent === 'Event' && post.date && (
                     <div className="post-detail">
                       <span className="detail-icon">📅</span>
                       <span>{formatDate(post.date)}</span>
                     </div>
                   )}
                   
-                  {post.intent === 'LostFound' && post.item && (
+                  {intent === 'LostFound' && (post.item || post.itemName) && (
                     <div className="post-detail">
                       <span className="detail-icon">🔍</span>
-                      <span>{post.item}</span>
+                      <span>{post.item || post.itemName}</span>
                     </div>
                   )}
                   
-                  {post.intent === 'Announcement' && post.department && (
+                  {intent === 'Announcement' && post.department && (
                     <div className="post-detail">
                       <span className="detail-icon">🏢</span>
                       <span>{post.department}</span>
