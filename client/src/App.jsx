@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import PostGenerator from "./components/PostGenerator";
+import PostGenerator from "./components/postGenerator";
 import { getUserSession } from "./services/postService";
 import { getFeed, initSession, togglePostReaction, getComments, createComment, toggleCommentReaction, setEventRsvp } from "./services/backend";
 import "./App.css";
