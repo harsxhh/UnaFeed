@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Upload, X, Image as ImageIcon } from "lucide-react";
 
 const CLOUDINARY_CLOUD_NAME = "dl3cveveh";
-const CLOUDINARY_UPLOAD_PRESET = "ml_default"; // Using default preset
+const CLOUDINARY_UPLOAD_PRESET = "unsigned_preset"; // Using default preset
 
 export default function ImageUpload({ onImageUploaded, onImageRemoved, existingImages = [] }) {
   const [uploading, setUploading] = useState(false);
