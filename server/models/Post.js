@@ -7,6 +7,13 @@ const { Schema } = mongoose;
 const EventPostSchema = new Schema({
   date: { type: Date, required: true },
   location: { type: String, required: true },
+  rsvps: [
+    {
+      userId: { type: String, required: true },
+      status: { type: String, enum: ['going', 'not_going'], required: true },
+      updatedAt: { type: Date, default: Date.now },
+    },
+  ],
 });
 
 // Lost & Found Post
